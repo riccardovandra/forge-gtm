@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code as a Business Operating System - Clay Club Guestroom #13</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #09090F;
+            --bg-secondary: #14131B;
+            --bg-tertiary: #1e1d28;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-hover: rgba(255, 255, 255, 0.10);
+            --border: rgba(255, 255, 255, 0.1);
+            --border-hover: rgba(255, 255, 255, 0.2);
+            --text-primary: #F7F7F7;
+            --text-secondary: #C8D1D3;
+            --text-muted: #7F8282;
+            --accent-primary: #4D79D8;
+            --accent-secondary: #7BA3E8;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-danger: #ef4444;
+            --gradient-primary: linear-gradient(135deg, #4D79D8 0%, #7BA3E8 100%);
+            --gradient-secondary: linear-gradient(135deg, #14131B 0%, #1e1d28 100%);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.4);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.5);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glow-color: rgba(77, 121, 216, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+
+        .presentation-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--glow-color) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Slide System */
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 60px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .slide .content {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            text-align: center;
+        }
+
+        /* Typography */
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: clamp(36px, 5vw, 60px);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin: 0 0 20px 0;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: clamp(32px, 5vw, 52px);
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+            margin: 0 0 25px 0;
+            color: var(--text-primary);
+        }
+
+        h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: clamp(20px, 3vw, 28px);
+            line-height: 1.3;
+            margin: 0 0 16px 0;
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            font-weight: 400;
+            font-size: clamp(16px, 2.5vw, 22px);
+            color: var(--text-secondary);
+            margin: 0 0 40px 0;
+            max-width: 700px;
+            line-height: 1.6;
+        }
+
+        .body-text {
+            font-size: clamp(15px, 1.8vw, 19px);
+            line-height: 1.7;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 20px auto 0;
+        }
+
+        .accent-text {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .label-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        /* Glass Cards */
+        .pro-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 28px 24px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: var(--shadow-md);
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .pro-card.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .pro-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .pro-card:hover {
+            background: var(--surface-hover);
+            border-color: var(--border-hover);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg), 0 0 30px rgba(77, 121, 216, 0.1);
+        }
+
+        .pro-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .pro-card h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(17px, 2vw, 20px);
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-primary);
+        }
+
+        .pro-card p {
+            font-size: clamp(13px, 1.4vw, 15px);
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .pro-card .card-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        /* Grid Layouts */
+        .two-col-pro {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+            width: 100%;
+            margin: 30px auto;
+            max-width: 900px;
+        }
+
+        .three-col-pro {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            margin: 30px auto;
+            max-width: 950px;
+        }
+
+        /* Stats */
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-pro {
+            text-align: center;
+            padding: 24px 32px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            min-width: 200px;
+            box-shadow: var(--shadow-md);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .stat-pro.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .stat-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(36px, 6vw, 56px);
+            font-weight: 600;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: clamp(12px, 1.2vw, 14px);
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Quote Block */
+        .pro-quote {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-left: 4px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 28px 32px;
+            margin: 30px 0;
+            max-width: 850px;
+            width: 100%;
+            position: relative;
+            box-shadow: var(--shadow-md);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .pro-quote.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .pro-quote::before {
+            content: '\201C';
+            font-size: 72px;
+            font-family: 'Montserrat', serif;
+            position: absolute;
+            top: -8px;
+            left: 18px;
+            color: var(--accent-primary);
+            opacity: 0.3;
+            line-height: 1;
+        }
+
+        .pro-quote h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(18px, 2.8vw, 26px);
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.3;
+            margin-bottom: 12px;
+            padding-left: 16px;
+        }
+
+        .pro-quote p {
+            font-size: clamp(14px, 1.6vw, 17px);
+            color: var(--text-secondary);
+            line-height: 1.6;
+            padding-left: 16px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: rgba(9, 9, 15, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 24px;
+            margin: 24px auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(12px, 1.2vw, 14px);
+            color: var(--text-secondary);
+            text-align: left;
+            overflow-x: auto;
+            box-shadow: var(--shadow-sm);
+            max-width: 750px;
+            width: 100%;
+            white-space: pre;
+            line-height: 1.7;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .code-block.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .code-block .highlight {
+            color: var(--accent-primary);
+        }
+
+        .code-block .muted {
+            color: var(--text-muted);
+        }
+
+        .code-block .folder {
+            color: var(--accent-secondary);
+        }
+
+        .code-block .file {
+            color: var(--text-secondary);
+        }
+
+        .code-block .comment {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* Command Badge */
+        .command-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--accent-primary);
+            background: rgba(77, 121, 216, 0.12);
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        /* Logo styling */
+        .logo-img {
+            height: 36px;
+            width: auto;
+            margin-bottom: 16px;
+            object-fit: contain;
+        }
+
+        .logo-img.logo-clay {
+            height: 42px;
+            filter: brightness(0) invert(1);
+        }
+
+        /* Screenshot */
+        .screenshot-container {
+            max-width: 800px;
+            width: 100%;
+            margin: 20px auto;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .screenshot-container.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .screenshot-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            max-width: 400px;
+            height: 4px;
+            background: var(--bg-tertiary);
+            border-radius: 2px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            width: 0%;
+            border-radius: 2px;
+            transition: width 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Contact links */
+        .contact-row {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        .contact-row.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .contact-item {
+            text-align: center;
+        }
+
+        .contact-item .contact-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 6px;
+        }
+
+        .contact-item a {
+            color: var(--accent-secondary);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .contact-item a:hover {
+            color: var(--accent-primary);
+        }
+
+        /* Thanks heading */
+        .thanks-heading {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: clamp(42px, 6vw, 72px);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin: 0 0 16px 0;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            display: flex;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: rgba(20, 19, 27, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-btn:hover {
+            background: var(--surface-hover);
+            border-color: var(--border-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Slide Counter */
+        .slide-counter {
+            position: fixed;
+            top: 32px;
+            left: 32px;
+            background: rgba(20, 19, 27, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .slide-counter .current {
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        /* Body text that animates */
+        .body-text-anim {
+            font-size: clamp(15px, 1.8vw, 19px);
+            line-height: 1.7;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 20px auto 0;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+
+        .body-text-anim.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 60px 30px;
+            }
+
+            .two-col-pro,
+            .three-col-pro {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .stats-container {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .contact-row {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .screenshot-container {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .slide {
+                padding: 50px 40px;
+            }
+            h2 {
+                font-size: clamp(26px, 4vw, 40px);
+                margin-bottom: 15px;
+            }
+            .pro-card {
+                padding: 20px 18px;
+            }
+            .pro-quote {
+                padding: 20px 24px;
+            }
+            .two-col-pro, .three-col-pro {
+                margin: 20px auto;
+                gap: 16px;
+            }
+            .screenshot-container {
+                max-width: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <div class="slide-counter">
+            <span class="current" id="currentSlide">01</span> / <span id="totalSlides">13</span>
+        </div>
+
+        <!-- Slide 1: Title -->
+        <div class="slide active" data-slide="0">
+            <div class="content">
+                <div class="label-tag">Clay Club Guestroom #13 &middot; March 4, 2026</div>
+                <h1>Claude Code as a Business Operating System</h1>
+                <div class="subtitle">How to think about Claude Code beyond building, and why it changes how you run your business</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Three Branding Problems -->
+        <div class="slide" data-slide="1">
+            <div class="content">
+                <div class="label-tag">Claude Code</div>
+                <h2>The Perception Problem</h2>
+                <div class="body-text" style="margin: 0 auto 10px; max-width: 700px;">Three myths about Claude Code that stop people before they start</div>
+                <div class="three-col-pro">
+                    <div class="pro-card">
+                        <span class="card-icon">&#x1F4DB;</span>
+                        <h4>&ldquo;Code&rdquo; Is in the Name</h4>
+                        <p>People hear &ldquo;Claude Code&rdquo; and think it&rsquo;s for developers. It&rsquo;s not. You write in plain English.</p>
+                    </div>
+                    <div class="pro-card">
+                        <span class="card-icon">&#x1F5A5;</span>
+                        <h4>&ldquo;You Need the Terminal&rdquo;</h4>
+                        <p>There&rsquo;s a perception you need the command line. You can run Claude Code straight from VS Code. Just a chat window.</p>
+                    </div>
+                    <div class="pro-card">
+                        <span class="card-icon">&#x1F3AE;</span>
+                        <h4>&ldquo;It&rsquo;s a Vibe Coding Tool&rdquo;</h4>
+                        <p>People think Claude Code means &ldquo;I can build an app.&rdquo; Sure. But that&rsquo;s a fraction of what it does.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Core idea + today's focus -->
+        <div class="slide" data-slide="2">
+            <div class="content">
+                <div class="pro-quote">
+                    <h4>I don&rsquo;t just open Claude Code to build software. I open it to run my business.</h4>
+                    <p>From &ldquo;it builds things&rdquo; to &ldquo;it runs things.&rdquo;</p>
+                </div>
+                <div class="two-col-pro" style="max-width: 700px; margin-top: 25px;">
+                    <div class="pro-card" style="text-align: center;">
+                        <span class="card-icon">&#x1F6E1;&#xFE0F;</span>
+                        <h4>Making It Less Scary</h4>
+                        <p>Breaking down the setup so you can actually get started today.</p>
+                    </div>
+                    <div class="pro-card" style="text-align: center;">
+                        <span class="card-icon">&#x1F9E0;</span>
+                        <h4>Think of It as an OS</h4>
+                        <p>How to stop thinking &ldquo;coding tool&rdquo; and start thinking &ldquo;business operating system.&rdquo;</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: What is an AI Workspace? -->
+        <div class="slide" data-slide="3">
+            <div class="content">
+                <h2>One Folder. Your Entire Business.</h2>
+                <div class="body-text" style="margin: 0 auto 10px;">A single place where Claude Code accesses everything it needs to work for you</div>
+                <div class="three-col-pro">
+                    <div class="pro-card">
+                        <span class="card-icon">&#x1F4DA;</span>
+                        <h4>Business Context</h4>
+                        <p>Your ICP, offers, tone of voice, messaging. The knowledge the system needs to do good work.</p>
+                    </div>
+                    <div class="pro-card">
+                        <span class="card-icon">&#x2699;&#xFE0F;</span>
+                        <h4>Your Processes</h4>
+                        <p>How you build lead lists, monitor email infra, create reports. Repeatable steps the AI follows.</p>
+                    </div>
+                    <div class="pro-card">
+                        <span class="card-icon">&#x1F465;</span>
+                        <h4>Client Structure</h4>
+                        <p>Per-client ICP, campaigns, reports. Organized so the AI knows who it&rsquo;s working for.</p>
+                    </div>
+                </div>
+                <div class="body-text-anim">In simple terms: a folder on your computer with text files. That&rsquo;s it.</div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Workspace Structure -->
+        <div class="slide" data-slide="4">
+            <div class="content">
+                <h2>Simple by Design</h2>
+                <div class="code-block"><span class="folder">&#x1F4C1; my-agency/</span>
+<span class="muted">&#9474;</span>
+<span class="muted">&#9500;&#9472;&#9472;</span> <span class="highlight">&#x1F4C4; CLAUDE.md</span>                <span class="comment">&larr; Main AI instructions</span>
+<span class="muted">&#9474;</span>
+<span class="muted">&#9500;&#9472;&#9472;</span> <span class="folder">&#x1F4C1; .claude/</span>
+<span class="muted">&#9474;   &#9500;&#9472;&#9472;</span> <span class="folder">&#x1F4C1; skills/</span>              <span class="comment">&larr; Your repeatable processes</span>
+<span class="muted">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="folder">&#x1F4C1; proposal-builder/</span>
+<span class="muted">&#9474;   &#9474;   &#9500;&#9472;&#9472;</span> <span class="folder">&#x1F4C1; email-infra-check/</span>
+<span class="muted">&#9474;   &#9474;   &#9492;&#9472;&#9472;</span> <span class="folder">&#x1F4C1; outbound-report/</span>
+<span class="muted">&#9474;   &#9492;&#9472;&#9472;</span> <span class="folder">&#x1F4C1; commands/</span>             <span class="comment">&larr; Quick actions</span>
+<span class="muted">&#9474;       &#9500;&#9472;&#9472;</span> <span class="file">&#x1F4C4; morning.md</span>
+<span class="muted">&#9474;       &#9492;&#9472;&#9472;</span> <span class="file">&#x1F4C4; load-client.md</span>
+<span class="muted">&#9474;</span>
+<span class="muted">&#9500;&#9472;&#9472;</span> <span class="folder">&#x1F4C1; context/</span>                 <span class="comment">&larr; Business knowledge</span>
+<span class="muted">&#9474;   &#9500;&#9472;&#9472;</span> <span class="file">&#x1F4C4; icp.md</span>
+<span class="muted">&#9474;   &#9500;&#9472;&#9472;</span> <span class="file">&#x1F4C4; offers.md</span>
+<span class="muted">&#9474;   &#9492;&#9472;&#9472;</span> <span class="file">&#x1F4C4; tone-of-voice.md</span>
+<span class="muted">&#9474;</span>
+<span class="muted">&#9492;&#9472;&#9472;</span> <span class="folder">&#x1F4C1; workspace/</span>               <span class="comment">&larr; Where the work happens</span>
+<span class="muted">    &#9492;&#9472;&#9472;</span> <span class="folder">&#x1F4C1; clients/</span>
+<span class="muted">        &#9500;&#9472;&#9472;</span> <span class="folder">&#x1F4C1; client-a/</span>
+<span class="muted">        &#9474;   &#9500;&#9472;&#9472;</span> <span class="file">&#x1F4C4; context.md</span>
+<span class="muted">        &#9474;   &#9500;&#9472;&#9472;</span> <span class="file">&#x1F4C4; icp.md</span>
+<span class="muted">        &#9474;   &#9492;&#9472;&#9472;</span> <span class="folder">&#x1F4C1; campaigns/</span>
+<span class="muted">        &#9492;&#9472;&#9472;</span> <span class="folder">&#x1F4C1; client-b/</span></div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Skills -->
+        <div class="slide" data-slide="5">
+            <div class="content">
+                <h2>Teach It Once. Run It Forever.</h2>
+                <div class="body-text" style="margin: 0 auto 10px;">Any process you run regularly becomes a reusable skill</div>
+                <div class="two-col-pro">
+                    <div class="pro-card">
+                        <span class="card-icon">&#x1F4CA;</span>
+                        <h4>Outbound Report</h4>
+                        <p>&ldquo;Generate the weekly outbound report for Client A.&rdquo; Pulls campaign stats, results, insights, and next steps. Automatically.</p>
+                    </div>
+                    <div class="pro-card">
+                        <span class="card-icon">&#x1F4DD;</span>
+                        <h4>Proposal Builder</h4>
+                        <p>A prospect shows interest. The system builds a proposal with their situation, your recommended approach, and pricing.</p>
+                    </div>
+                </div>
+                <div class="body-text-anim">Skills can be <span class="accent-text">iterative</span> (step by step with your input) or <span class="accent-text">one-shot</span> (runs the full process in one go)</div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Commands -->
+        <div class="slide" data-slide="6">
+            <div class="content">
+                <h2>One Word. Done.</h2>
+                <div class="body-text" style="margin: 0 auto 10px;">Slash commands that trigger entire workflows</div>
+                <div class="three-col-pro">
+                    <div class="pro-card">
+                        <div class="command-badge">/morning</div>
+                        <h4>Daily Briefing</h4>
+                        <p>Which campaigns need attention? Which clients are running low on prospects? What happened yesterday?</p>
+                    </div>
+                    <div class="pro-card">
+                        <div class="command-badge">/load-client</div>
+                        <h4>Load Client Context</h4>
+                        <p>Loads all of a client&rsquo;s context so you can start working on their stuff immediately.</p>
+                    </div>
+                    <div class="pro-card">
+                        <div class="command-badge">/new-campaign</div>
+                        <h4>Set Up Campaign</h4>
+                        <p>Walks you through setting up a new campaign. Asks the right questions, creates the structure.</p>
+                    </div>
+                </div>
+                <div class="pro-quote">
+                    <h4>You say &ldquo;do the thing&rdquo; and it knows what &ldquo;the thing&rdquo; means for your business.</h4>
+                    <p>The process is saved. You don&rsquo;t explain from scratch every time.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Five Steps -->
+        <div class="slide" data-slide="7">
+            <div class="content">
+                <h2>Five Steps. That&rsquo;s It.</h2>
+                <div class="body-text" style="margin: 0 auto 10px;">From zero to your first AI workspace</div>
+                <div class="three-col-pro" style="grid-template-columns: repeat(5, 1fr); max-width: 1100px;">
+                    <div class="pro-card" style="text-align: center;">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 600; color: var(--accent-primary); margin-bottom: 8px;">01</div>
+                        <h4>Install VS Code</h4>
+                        <p>Free. One download. The editor everything runs inside.</p>
+                    </div>
+                    <div class="pro-card" style="text-align: center;">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 600; color: var(--accent-primary); margin-bottom: 8px;">02</div>
+                        <h4>Install Claude Code</h4>
+                        <p>~$20/month. Takes 2 minutes to sign up and activate.</p>
+                    </div>
+                    <div class="pro-card" style="text-align: center;">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 600; color: var(--accent-primary); margin-bottom: 8px;">03</div>
+                        <h4>Create a Folder</h4>
+                        <p>A folder on your computer. That&rsquo;s your workspace.</p>
+                    </div>
+                    <div class="pro-card" style="text-align: center;">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 600; color: var(--accent-primary); margin-bottom: 8px;">04</div>
+                        <h4>Open It in VS Code</h4>
+                        <p>Drag the folder in. Now you have a workspace open.</p>
+                    </div>
+                    <div class="pro-card" style="text-align: center;">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 600; color: var(--accent-primary); margin-bottom: 8px;">05</div>
+                        <h4>Add the Extension</h4>
+                        <p>Install the Claude Code extension. Start talking to it.</p>
+                    </div>
+                </div>
+                <div class="body-text-anim">No terminal. No command line. Just a chat window inside VS Code.</div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Live Demo -->
+        <div class="slide" data-slide="8">
+            <div class="content">
+                <div class="label-tag">Live Demo</div>
+                <h2>From Command to Lead List</h2>
+                <div class="command-badge" style="font-size: 16px; padding: 8px 16px; margin-bottom: 20px;">/outreach clay</div>
+                <div class="code-block" style="max-width: 600px; font-size: clamp(11px, 1.1vw, 13px); line-height: 1.6; margin: 0 auto 20px;">Research &#8594; Tiering &#8594; List Building &#8594; Sequences &#8594; Review</div>
+                <div class="stats-container">
+                    <div class="stat-pro">
+                        <div class="stat-number" style="color: var(--accent-danger);">1hr<span style="font-size: 0.4em;">+</span></div>
+                        <div class="stat-label">Traditional Way</div>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">Apollo + LinkedIn + spreadsheets</p>
+                    </div>
+                    <div class="stat-pro">
+                        <div class="stat-number" style="color: var(--accent-success);">Min<span style="font-size: 0.4em;">s</span></div>
+                        <div class="stat-label">AI Workspace</div>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">One command, full outreach pipeline</p>
+                    </div>
+                </div>
+                <div class="body-text-anim">One command runs the full pipeline for <span class="accent-text">Clay</span>: researches their product, builds tiered lead lists, writes personalized sequences, and presents everything for review.</div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Claude Code + Clay (with logos) -->
+        <div class="slide" data-slide="9">
+            <div class="content">
+                <h2>Claude Code + Clay</h2>
+                <div class="two-col-pro">
+                    <div class="pro-card" style="text-align: center;">
+                        <img src="assets/Claude Code Logo.png" alt="Claude Code" class="logo-img">
+                        <h4>Claude Code</h4>
+                        <p style="font-weight: 500; color: var(--accent-secondary); margin-bottom: 8px;">The thinking work</p>
+                        <p>Research, list building, personalization, reports. Reads your business context, follows your processes.</p>
+                    </div>
+                    <div class="pro-card" style="text-align: center;">
+                        <img src="assets/Clay Arch Marque.png" alt="Clay" class="logo-img logo-clay">
+                        <h4>Clay</h4>
+                        <p style="font-weight: 500; color: var(--accent-secondary); margin-bottom: 8px;">The execution and scaling</p>
+                        <p>Enrichment at scale, segmentation, visual workflows, sequencing. Handles rate limits and infrastructure.</p>
+                    </div>
+                </div>
+                <div class="pro-quote">
+                    <h4>Not replacement. Addition.</h4>
+                    <p>Claude Code does the thinking and preparation. Clay does the execution and scaling.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Getting Started -->
+        <div class="slide" data-slide="10">
+            <div class="content">
+                <h2>Start in Five Minutes</h2>
+                <div class="body-text" style="margin: 0 auto 10px;">The barrier is lower than you think</div>
+                <div class="three-col-pro">
+                    <div class="pro-card">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 600; color: var(--accent-primary); margin-bottom: 12px;">01</div>
+                        <h4>Install Claude Code</h4>
+                        <p>~$20/month subscription. Takes 5 minutes to set up.</p>
+                    </div>
+                    <div class="pro-card">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 600; color: var(--accent-primary); margin-bottom: 12px;">02</div>
+                        <h4>Create a Folder</h4>
+                        <p>Open VS Code. Create a folder. Write one file describing your ideal customer.</p>
+                    </div>
+                    <div class="pro-card">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 600; color: var(--accent-primary); margin-bottom: 12px;">03</div>
+                        <h4>Give It a Task</h4>
+                        <p>Not &ldquo;what should I write?&rdquo; but &ldquo;write an outreach email to this company based on their website.&rdquo;</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Resources -->
+        <div class="slide" data-slide="11">
+            <div class="content">
+                <h2>Take These With You</h2>
+                <div class="body-text" style="margin: 0 auto 10px;">Everything you need to start building your own workspace</div>
+                <div class="two-col-pro">
+                    <a href="https://github.com/riccardovandra/forge-gtm" target="_blank" style="text-decoration: none; color: inherit;">
+                        <div class="pro-card" style="text-align: center; cursor: pointer; transition: border-color 0.3s;">
+                            <span class="card-icon">&#x1F4C2;</span>
+                            <h4>Forge GTM Workspace</h4>
+                            <p>A ready-to-use AI Workspace for B2B outbound agencies. Clone it and start building on it today.</p>
+                            <p style="margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent-secondary);">github.com/riccardovandra/forge-gtm</p>
+                        </div>
+                    </a>
+                    <a href="https://github.com/riccardovandra/cc-plugin-productivity-suite" target="_blank" style="text-decoration: none; color: inherit;">
+                        <div class="pro-card" style="text-align: center; cursor: pointer; transition: border-color 0.3s;">
+                            <span class="card-icon">&#x1F9F0;</span>
+                            <h4>Productivity Suite Plugin</h4>
+                            <p>14 integration skills for Claude Code: Gmail, Google Sheets, Docs, Drive, Slack, ClickUp, and more.</p>
+                            <p style="margin-top: 12px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent-secondary);">github.com/riccardovandra/cc-plugin-productivity-suite</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Thanks + Contacts -->
+        <div class="slide" data-slide="12">
+            <div class="content">
+                <div class="thanks-heading">Thanks.</div>
+                <div class="body-text" style="margin: 0 auto 20px; color: var(--text-muted);">If you want to keep in touch or go deeper, here&rsquo;s where to find me.</div>
+                <div class="contact-row">
+                    <div class="contact-item">
+                        <div class="contact-label">YouTube</div>
+                        <a href="https://www.youtube.com/@riccardovandra/videos" target="_blank">@riccardovandra</a>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">LinkedIn</div>
+                        <a href="https://it.linkedin.com/in/riccardovandra" target="_blank">riccardovandra</a>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-label">Email</div>
+                        <a href="mailto:riccardo@upliftedconsulting.com">riccardo@upliftedconsulting.com</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav">
+            <button class="nav-btn" onclick="previousSlide()">&#8592; Prev</button>
+            <button class="nav-btn" onclick="nextAction()">Next &#8594;</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 0;
+        let currentAnimationStep = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides.toString().padStart(2, '0');
+
+        // Define animations per slide
+        const slideAnimations = {
+            // Slide 2: Three branding problems (3 cards)
+            1: [
+                () => slides[1].querySelectorAll('.pro-card')[0].classList.add('animate-in'),
+                () => slides[1].querySelectorAll('.pro-card')[1].classList.add('animate-in'),
+                () => slides[1].querySelectorAll('.pro-card')[2].classList.add('animate-in'),
+            ],
+            // Slide 3: Quote + 2 focus cards
+            2: [
+                () => slides[2].querySelector('.pro-quote').classList.add('animate-in'),
+                () => slides[2].querySelectorAll('.pro-card')[0].classList.add('animate-in'),
+                () => slides[2].querySelectorAll('.pro-card')[1].classList.add('animate-in'),
+            ],
+            // Slide 4: AI Workspace (3 cards + body)
+            3: [
+                () => slides[3].querySelectorAll('.pro-card')[0].classList.add('animate-in'),
+                () => slides[3].querySelectorAll('.pro-card')[1].classList.add('animate-in'),
+                () => slides[3].querySelectorAll('.pro-card')[2].classList.add('animate-in'),
+                () => slides[3].querySelector('.body-text-anim').classList.add('animate-in'),
+            ],
+            // Slide 5: Code block
+            4: [
+                () => slides[4].querySelector('.code-block').classList.add('animate-in'),
+            ],
+            // Slide 6: Skills (2 cards + body)
+            5: [
+                () => slides[5].querySelectorAll('.pro-card')[0].classList.add('animate-in'),
+                () => slides[5].querySelectorAll('.pro-card')[1].classList.add('animate-in'),
+                () => slides[5].querySelector('.body-text-anim').classList.add('animate-in'),
+            ],
+            // Slide 7: Commands (3 cards + quote)
+            6: [
+                () => slides[6].querySelectorAll('.pro-card')[0].classList.add('animate-in'),
+                () => slides[6].querySelectorAll('.pro-card')[1].classList.add('animate-in'),
+                () => slides[6].querySelectorAll('.pro-card')[2].classList.add('animate-in'),
+                () => slides[6].querySelector('.pro-quote').classList.add('animate-in'),
+            ],
+            // Slide 8: Five Steps (5 cards + body)
+            7: [
+                () => slides[7].querySelectorAll('.pro-card')[0].classList.add('animate-in'),
+                () => slides[7].querySelectorAll('.pro-card')[1].classList.add('animate-in'),
+                () => slides[7].querySelectorAll('.pro-card')[2].classList.add('animate-in'),
+                () => slides[7].querySelectorAll('.pro-card')[3].classList.add('animate-in'),
+                () => slides[7].querySelectorAll('.pro-card')[4].classList.add('animate-in'),
+                () => slides[7].querySelector('.body-text-anim').classList.add('animate-in'),
+            ],
+            // Slide 9: Live Demo (code block + 2 stats + body)
+            8: [
+                () => slides[8].querySelector('.code-block').classList.add('animate-in'),
+                () => slides[8].querySelectorAll('.stat-pro')[0].classList.add('animate-in'),
+                () => slides[8].querySelectorAll('.stat-pro')[1].classList.add('animate-in'),
+                () => slides[8].querySelector('.body-text-anim').classList.add('animate-in'),
+            ],
+            // Slide 10: Claude Code + Clay (2 cards + quote)
+            9: [
+                () => slides[9].querySelectorAll('.pro-card')[0].classList.add('animate-in'),
+                () => slides[9].querySelectorAll('.pro-card')[1].classList.add('animate-in'),
+                () => slides[9].querySelector('.pro-quote').classList.add('animate-in'),
+            ],
+            // Slide 11: Getting Started (3 cards)
+            10: [
+                () => slides[10].querySelectorAll('.pro-card')[0].classList.add('animate-in'),
+                () => slides[10].querySelectorAll('.pro-card')[1].classList.add('animate-in'),
+                () => slides[10].querySelectorAll('.pro-card')[2].classList.add('animate-in'),
+            ],
+            // Slide 12: Resources (2 cards)
+            11: [
+                () => slides[11].querySelectorAll('.pro-card')[0].classList.add('animate-in'),
+                () => slides[11].querySelectorAll('.pro-card')[1].classList.add('animate-in'),
+            ],
+            // Slide 13: Thanks + contacts
+            12: [
+                () => slides[12].querySelector('.contact-row').classList.add('animate-in'),
+            ],
+        };
+
+        function initializeSlideElements(slideIndex) {
+            const slide = slides[slideIndex];
+            const hasAnimations = slideAnimations[slideIndex];
+
+            if (!hasAnimations) {
+                slide.querySelectorAll('.pro-card, .stat-pro, .pro-quote, .code-block, .body-text-anim, .screenshot-container, .contact-row').forEach(el => {
+                    el.classList.add('animate-in');
+                });
+            }
+        }
+
+        function resetSlideAnimations(slideIndex) {
+            const slide = slides[slideIndex];
+            slide.querySelectorAll('.pro-card, .stat-pro, .pro-quote, .code-block, .body-text-anim, .screenshot-container, .contact-row').forEach(el => {
+                el.classList.remove('animate-in');
+            });
+        }
+
+        function showSlide(index) {
+            slides[currentSlideIndex].classList.remove('active');
+            resetSlideAnimations(currentSlideIndex);
+
+            currentSlideIndex = index;
+            currentAnimationStep = 0;
+
+            slides[currentSlideIndex].classList.add('active');
+            document.getElementById('currentSlide').textContent = (currentSlideIndex + 1).toString().padStart(2, '0');
+
+            initializeSlideElements(currentSlideIndex);
+        }
+
+        function nextAction() {
+            const animations = slideAnimations[currentSlideIndex];
+
+            if (animations && currentAnimationStep < animations.length) {
+                animations[currentAnimationStep]();
+                currentAnimationStep++;
+            } else {
+                if (currentSlideIndex < totalSlides - 1) {
+                    showSlide(currentSlideIndex + 1);
+                }
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlideIndex > 0) {
+                showSlide(currentSlideIndex - 1);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowRight') {
+                e.preventDefault();
+                nextAction();
+            } else if (e.code === 'ArrowLeft') {
+                e.preventDefault();
+                previousSlide();
+            }
+        });
+
+        initializeSlideElements(0);
+    </script>
+</body>
+</html>
